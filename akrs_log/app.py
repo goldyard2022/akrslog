@@ -52,6 +52,7 @@ def save_to_excel(data):
 
 # Streamlit应用主函数
 def main():
+    
     st.title("日志分析工具 5x5")
 
     uploaded_file = st.file_uploader("上传日志文件", type=["txt", "log"])
