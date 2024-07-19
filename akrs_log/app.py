@@ -3,6 +3,7 @@ import json
 import numpy as np
 import pandas as pd
 from math import sqrt
+import io
 
 # 计算两点之间的欧几里得距离
 def calculate_distance(p1, p2):
@@ -26,6 +27,7 @@ def calculate_custom_distances(log_data):
 
 # 计算三西格玛值
 def calculate_three_sigma(values):
+    mean = np.mean(values)
     std_dev = np.std(values)
     return 3 * std_dev
 
@@ -41,10 +43,12 @@ def parse_log_file(file, keyword):
                 log_data.append(log_entry)
     return log_data
 
-# 保存数据到Excel文件
-def save_to_excel(data, filename):
+# 保存数据到Excel文件并返回文件内容
+def save_to_excel(data):
+    output = io.BytesIO()
     df = pd.DataFrame(data)
-    df.to_excel(filename, index=False)
+    df.to_excel(output, index=False)
+    return output.getvalue()
 
 # Streamlit应用主函数
 def main():
@@ -68,7 +72,7 @@ def main():
             # 构建横向数据表
             three_sigma_values = [calculate_three_sigma(group_distances) for group_distances in distances]
             
-            df_sigma = pd.DataFrame([three_sigma_values], columns=[f" {i+1} " for i in range(20)])
+            df_sigma = pd.DataFrame([three_sigma_values], columns=[f"{i+1}" for i in range(20)])
             
             st.table(df_sigma)
 
@@ -81,8 +85,13 @@ def main():
                     row[f"Y{i+1}"] = point["Y"]
                 original_points.append(row)
 
-            save_to_excel(original_points, f"{keyword}_points.xlsx")
-            st.success(f"原始点坐标已保存为 {keyword}_points.xlsx")
+            excel_data = save_to_excel(original_points)
+            st.download_button(
+                label="下载原始点坐标数据",
+                data=excel_data,
+                file_name=f"{keyword}_points.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
 
             for i, group_distances in enumerate(distances):
                 if group_distances and st.checkbox(f"显示组 {i+1} 的所有距离 ({keyword})"):
