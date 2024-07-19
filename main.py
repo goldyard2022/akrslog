@@ -6,7 +6,7 @@ def main():
     _config.set_option("server.headless", False)
     _config.set_option("server.port", 8501)
     bootstrap.run(
-        main_script_path="akrs_log/app.py",
+        main_script_path="akrs_log/log_analysis_5x5.py",
         is_hello=False,
         args=[],
         flag_options={},
