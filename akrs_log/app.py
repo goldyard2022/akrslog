@@ -93,9 +93,7 @@ def main():
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
 
-            for i, group_distances in enumerate(distances):
-                if group_distances and st.checkbox(f"显示组 {i+1} 的所有距离 ({keyword})"):
-                    st.write(group_distances)
+            
 
 if __name__ == "__main__":
     main()
