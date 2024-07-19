@@ -11,16 +11,15 @@ def calculate_distance(p1, p2):
 
 # 计算指定点对之间的距离
 def calculate_custom_distances(log_data):
-    distances = [[] for _ in range(20)]  # 20组距离
+    distances = [[] for _ in range(12)]  # 12组距离
     point_pairs = [
-        (0, 5), (1, 6), (2, 7), (3, 8), (4, 9),   # 第一排和第二排
-        (5, 10), (6, 11), (7, 12), (8, 13), (9, 14),  # 第二排和第三排
-        (10, 15), (11, 16), (12, 17), (13, 18), (14, 19),  # 第三排和第四排
-        (15, 20), (16, 21), (17, 22), (18, 23), (19, 24)  # 第四排和第五排
+        (0, 4), (1, 5), (2, 6), (3, 7),   # 第一排和第二排
+        (4, 8), (5, 9), (6, 10), (7, 11),  # 第二排和第三排
+        (8, 12), (9, 13), (10, 14), (11, 15)  # 第三排和第四排
     ]
     for entry in log_data:
         points = entry["匹配点"]
-        if len(points) == 25:
+        if len(points) == 16:
             for i, (p1_idx, p2_idx) in enumerate(point_pairs):
                 distances[i].append(calculate_distance(points[p1_idx], points[p2_idx]))
     return distances
@@ -39,7 +38,7 @@ def parse_log_file(file, keyword):
         if keyword in line:
             json_str = line.split('PR执行结果：')[-1].strip()
             log_entry = json.loads(json_str)
-            if len(log_entry["匹配点"]) == 25:
+            if len(log_entry["匹配点"]) == 16:
                 log_data.append(log_entry)
     return log_data
 
@@ -52,7 +51,7 @@ def save_to_excel(data):
 
 # Streamlit应用主函数
 def main():
-    st.title("日志分析工具 5x5")
+    st.title("日志分析工具 4x4")
 
     uploaded_file = st.file_uploader("上传日志文件", type=["txt", "log"])
     
@@ -72,7 +71,7 @@ def main():
             # 构建横向数据表
             three_sigma_values = [calculate_three_sigma(group_distances) for group_distances in distances]
             
-            df_sigma = pd.DataFrame([three_sigma_values], columns=[f"{i+1}" for i in range(20)])
+            df_sigma = pd.DataFrame([three_sigma_values], columns=[f"{i+1}" for i in range(12)])
             
             st.table(df_sigma)
 
