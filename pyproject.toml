@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "akrs-log"
+version = "0.1.0"
+description = ""
+authors = ["Freeman Long <goldyard@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+streamlit = "^1.36.0"
+watchdog = "^4.0.1"
+pandas = "^2.2.2"
+openpyxl = "^3.1.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+start = "main:main"
