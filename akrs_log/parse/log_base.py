@@ -1,20 +1,25 @@
-# 定义日志格式
-
-AKRS_LOG = {
-    "LOG_CURRENT_FORCE": (
-        "{date} {time} +08:00 [INF] LeftBondModule - 当前力控值：{force}g, 高度：{height}"
+# 定义日志模板
+LOG_TEMPLATES = [
+    (
+        "MOVE_MAP_POSITION",
+        "{date} {time} +08:00 [INF] LeftBondModule - 移动到Map指定位置[{row:d},{col:d}] [{x:d},{y:d}]完成",
     ),
-    "PR_EXECUTION_RESULT": (
-        "{date} {time} +08:00 [INF] {module} PR执行结果：{json_data}"
+    ("PR_RESULT", "{date} {time} +08:00 [INF] {module}定位 PR执行结果：{json_data}"),
+    (
+        "ANGLE_CORRECTION",
+        "{date} {time} +08:00 [INF] LeftBondModule第{correction_num:d}次角度校正，DD旋转角度：{angle}°",
     ),
-    "MOTION_INFO": (
-        "{date} {time} +08:00 [INF] 轴[{axis}]相对运动，当前位置：[{current_position}]，位移量：[{displacement}]"
+    (
+        "PRECISION_ADJUSTMENT",
+        "{date} {time} +08:00 [INF] LeftBondModule精度校正{status}，Die位置 row:{row:d} col:{col:d}",
     ),
-    "BOND_LIGHT": (
-        "{date} {time} +08:00 [INF] 左Bond{light}光源-设置光源亮[{brightness}]"
+    ("CORRECTION_START", "{date} {time} +08:00 [INF] {module}开始校正"),
+    (
+        "CORRECTION_END",
+        "{date} {time} +08:00 [INF] 校正结束时间={end_time} 耗时={duration}ms",
     ),
-    "ANGLE_CORRECTION": (
-        "{date} {time} +08:00 [INF] LeftBondModule角度校正{status}，剩余残差：{residual}° 当前T轴角度：{angle}"
-    )
-}
-
+    (
+        "FORCE_CONTROL",
+        "{date} {time} +08:00 [INF] LeftBondModule - 当前力控值：{force}g, 高度：{height}",
+    ),
+]
