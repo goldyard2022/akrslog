@@ -50,16 +50,21 @@ def extract_log_segments(log_entries):
         if middle_pattern.search(log_entries[i]["content"]):
             middle_index = i
 
-            # 向上查找开始标记
+            # 向上查找开始标记，最多查找50行
             start_index = -1
-            for j in range(middle_index, -1, -1):
+            upper_limit = max(middle_index - 50, 0)
+            for j in range(middle_index, upper_limit - 1, -1):
                 if start_pattern.search(log_entries[j]["content"]):
                     start_index = j
                     break
 
+            # 如果找不到行列信息， 就向上取两行， 然后使用None作为位置信息了
             if start_index == -1:
-                i += 1
-                continue
+                if middle_index > 1:
+                    start_index = middle_index - 1
+                else:
+                    i += 1
+                    continue
 
             # 向下查找结束标记
             end_index = -1
@@ -94,8 +99,11 @@ def save_log_segment(log_segment, output_dir):
             f.write(entry["content"] + "\n")
     return file_path
 
+last_map_position = "Unknown"
 
 def generate_file_name(log_segment, output_dir):
+    global last_map_position  # 声明使用全局变量
+
     timestamp_str = (
         log_segment[0]["content"].split()[0]
         + " "
@@ -103,8 +111,15 @@ def generate_file_name(log_segment, output_dir):
     )
     timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S.%f")
     match = re.search(r"Die位置 row:(\d+) col:(\d+)", log_segment[0]["content"])
-    map_position = match.group(1) + "_" + match.group(2)
-    file_name = f"simulate_log_segment_{timestamp.strftime('%Y%m%d_%H%M%S')}_{map_position}.txt"
+    if match:
+        map_position = match.group(1) + "_" + match.group(2)
+        last_map_position = map_position + "_guess"  # 更新全局变量
+    else:
+        map_position = last_map_position
+
+    file_name = (
+        f"simulate_log_segment_{timestamp.strftime('%Y%m%d_%H%M%S')}_{map_position}.txt"
+    )
     return os.path.join(output_dir, file_name)
 
 

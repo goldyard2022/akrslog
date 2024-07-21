@@ -11,26 +11,33 @@ import pandas as pd
 import base64
 
 
-# 生成文件信息列表
-def generate_file_info_list(
-    log_segments: List[List[Dict[str, Any]]], output_dir: str
-) -> List[Dict[str, Any]]:
+def generate_file_info_list(log_segments, output_dir):
     file_info_list = []
+
     for segment in log_segments:
+        # 保存日志段到文件
         file_path = save_log_segment(segment, output_dir)
-        file_info = {
-            "file_name": os.path.basename(file_path),
-            "file_size": format_file_size(os.path.getsize(file_path)),
-            "file_path": file_path,
-        }
-        file_info_list.append(file_info)
+
+        # 获取文件大小
+        file_size_kb = os.path.getsize(file_path) / 1024
+
+        file_info_list.append(
+            {
+                "文件名": os.path.basename(file_path),
+                "文件大小": f"{file_size_kb:.2f} KB",
+                "下载链接": generate_download_link(file_path),
+                "file_path": file_path
+            }
+        )
+
     return file_info_list
 
 
-# 生成下载链接
 def generate_download_link(file_path: str) -> str:
-    return f'<a href="{file_path}" download="{os.path.basename(file_path)}">下载</a>'
-
+    with open(file_path, "rb") as f:
+        file_bytes = f.read()
+        b64 = base64.b64encode(file_bytes).decode()
+        return f'<a href="data:text/plain;base64,{b64}" download="{os.path.basename(file_path)}">下载</a>'
 
 # 格式化文件大小
 def format_file_size(size):
@@ -57,12 +64,6 @@ def bonding_log_analysis():
             st.error("未找到符合条件的日志段")
         else:
             file_info_list = generate_file_info_list(log_segments, output_dir)
-
-            # 添加下载链接
-            for file_info in file_info_list:
-                file_info["download_link"] = generate_download_link(
-                    file_info["file_path"]
-                )
 
             # 创建一个DataFrame来存储文件信息，并删除file_path列
             file_info_df = pd.DataFrame(file_info_list).drop(columns=["file_path"])
