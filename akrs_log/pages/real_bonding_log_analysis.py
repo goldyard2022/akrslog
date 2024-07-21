@@ -1,5 +1,5 @@
 import streamlit as st
-from akrs_log.base.log_analysis2 import (
+from akrs_log.base.log_analysis import (
     load_log_file,
     extract_log_segments,
     save_log_segment,
@@ -8,7 +8,7 @@ from akrs_log.base.log_analysis2 import (
 
 
 def bonding_log_analysis():
-    st.title("玻璃片模拟贴片校正对位日志切割工具")
+    st.title("正式片贴片日志切割工具")
 
     uploaded_file = st.file_uploader("上传模拟贴片日志文件", type=["txt", "log"])
 
@@ -35,6 +35,10 @@ def bonding_log_analysis():
                 # 保存日志段到文件
                 file_path = save_log_segment(segment, output_dir)
                 st.success(f"日志段已保存到文件：{file_path}")
+
+                # 解析日志块内容
+                # parsed_entries = parse_log_segment(segment)
+                # st.json(parsed_entries)
 
 
 # 调用函数显示页面内容

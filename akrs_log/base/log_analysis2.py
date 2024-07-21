@@ -40,9 +40,9 @@ def load_log_file(uploaded_file):
 
 
 def extract_log_segments(log_entries):
-    start_pattern = re.compile(r"移动到Map指定位置")
-    middle_pattern = re.compile(r"当前力控值")
-    end_pattern = re.compile(r"关闭焊头弱吹")
+    start_pattern = re.compile(r"精度校正:Bottom开始校正")
+    middle_pattern = re.compile(r"去工作台校正开始时间")
+    end_pattern = re.compile(r"校正结束时间")
 
     segments = []
     i = 0
@@ -102,12 +102,9 @@ def generate_file_name(log_segment, output_dir):
         + log_segment[0]["content"].split()[1]
     )
     timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S.%f")
-    map_position = (
-        re.search(r"\[(\d+,\d+)\]", log_segment[0]["content"])
-        .group(1)
-        .replace(",", "_")
-    )
-    file_name = f"bond_log_segment_{timestamp.strftime('%Y%m%d_%H%M%S')}_{map_position}.txt"
+    match = re.search(r"Die位置 row:(\d+) col:(\d+)", log_segment[0]["content"])
+    map_position = match.group(1) + "_" + match.group(2)
+    file_name = f"simulate_log_segment_{timestamp.strftime('%Y%m%d_%H%M%S')}_{map_position}.txt"
     return os.path.join(output_dir, file_name)
 
 
